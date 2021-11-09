@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MarkovTextGenerator
 {
-    public class Chain
+    public class  Chain
     {
         public Dictionary<String, List<Word>> words;
         private Dictionary<String, int> sums;
@@ -27,6 +27,7 @@ namespace MarkovTextGenerator
         /// <returns></returns>
         public String GetRandomStartingWord ()
         {
+            
             return words.Keys.ElementAt(rand.Next() % words.Keys.Count);
         }
 
@@ -46,6 +47,17 @@ namespace MarkovTextGenerator
             // TODO: Add each word pair to the chain
             // TODO: The last word of any sentence will be paired up with
             //       an empty string to show that it is the end of the sentence
+            
+            String[] spaces = sentence.Split(new char[] {'.','!','?',' ',','}, StringSplitOptions.RemoveEmptyEntries);
+            for (int i = 0; i < spaces.Length - 1; i++)
+            {
+                AddPair(spaces[i],spaces[i+1]);
+
+                if (i == spaces.Length)
+                {
+                    AddPair(spaces[i], "");
+                }
+            }
         }
 
         // Adds a pair of words to the chain that will appear in order
@@ -89,10 +101,29 @@ namespace MarkovTextGenerator
         /// <returns></returns>
         public String GetNextWord (String word)
         {
+             
             if (words.ContainsKey(word))
             {
+                Word fit = null; 
                 List<Word> choices = words[word];
                 double test = rand.NextDouble();
+
+                double calc = 0; 
+
+                foreach (var c in choices)
+                {
+                    calc += c.Probability;
+
+                    if (calc > test)
+                    {
+                        fit = c; 
+                    }
+                }
+
+                if (fit != null)
+                {
+                    return fit.ToString(); 
+                }
 
                 Console.WriteLine("I picked the number " + test); 
             }
